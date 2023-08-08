@@ -23,7 +23,7 @@ public class ArraySumEqualTarget {
 
         stopWatch.reset();
         stopWatch.start();
-        method2(10,new int [] {1,2,3,4,5,6,7,8,9});
+        method2(10,new int [] {1,2,3,4,6,7,8,9,10});
         stopWatch.stop();
         System.out.println(stopWatch.getTime());
 
