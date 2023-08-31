@@ -1,12 +1,12 @@
 package cn.test.myproject;
 
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 @Data
@@ -14,45 +14,132 @@ import java.util.stream.IntStream;
 class Entourage{
     private int[] figure;
     private boolean holyShield;
+
+    public Entourage(int[] figure) {
+        this.figure = figure;
+        this.holyShield = false;
+    }
+
+    public String info(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(Arrays.toString(this.figure));
+        if (this.figure[1] < 0) sb.append(" (已阵亡) ");
+        else if (holyShield) sb.append(" (有圣盾) ");
+        else sb.append(" (无圣盾) ");
+        return String.valueOf(sb);
+    }
+
+    public String info(boolean holyShield){
+        StringBuilder sb = new StringBuilder();
+        sb.append(Arrays.toString(this.figure));
+        if (this.figure[1] < 0) sb.append(" (已阵亡) ");
+        else if (holyShield) sb.append(" (有圣盾) ");
+        else sb.append(" (无圣盾) ");
+        return String.valueOf(sb);
+    }
 }
+
+@AllArgsConstructor
+class gainedThread extends Thread{
+    @SneakyThrows
+    @Override
+    public void run() {
+        AdaptiveBarriers adaptiveBarriers = new AdaptiveBarriers();
+        Random random = new Random();
+        while (true){
+            adaptiveBarriers.gained(new int[] {random.nextInt(101),random.nextInt(101)},random.nextBoolean());
+            Thread.sleep(20000);
+        }
+    }
+}
+
+@AllArgsConstructor
+class AttackedThread extends Thread{
+    @SneakyThrows
+    @Override
+    public void run() {
+        AdaptiveBarriers adaptiveBarriers = new AdaptiveBarriers();
+        Random random = new Random();
+        while (true){
+            adaptiveBarriers.attacked(new Entourage(new int[] {random.nextInt(101),random.nextInt(101)},random.nextBoolean()));
+            Thread.sleep(1000);
+        }
+    }
+}
+
 public class AdaptiveBarriers {
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws InterruptedException {
+        gainedThread gainedThread = new gainedThread();
+        AttackedThread attackedThread = new AttackedThread();
+        gainedThread.setDaemon(true);
+        gainedThread.start();
+        Thread.sleep(100);
+        attackedThread.start();
     }
 
-    boolean hasHolyShield;
-    int [] self = new int[] {9,1};
+    static Entourage self = new Entourage(new int[] {9,1},false);
 
-    public int[] attacked(List<Entourage> attacks) {
-        for (Entourage e : attacks) {
-            if (hasHolyShield){
-                hasHolyShield = false;
-                self = new int[] {self[0] + self[1] - 1,1};
-                System.out.println("被 " + Arrays.toString(e.getFigure()) + " 敌人攻击变形为 " + Arrays.toString(self) + "圣盾被破，剩余身材： " + Arrays.toString(self) +
-                        (e.isHolyShield() || self[0] < e.getFigure()[1] ? " 敌人还活着身材为 //TODO" : " 敌人被杀结果为" + Arrays.toString(new int[] {e.getFigure()[0],e.getFigure()[1] - self[0]})));
+    @SneakyThrows
+    public void attacked(Entourage e) {
+            System.out.print("当前身材 " + self.info());
+            if (self.isHolyShield()){
+                self.setHolyShield(false);
+                self.setFigure(new int[] {self.getFigure()[0] + self.getFigure()[1] - 1,1});
+                System.out.println(" 被 " + e.info() + " 敌人攻击变形为 " + self.info() + " 圣盾被破，剩余身材： " + self.info() +
+                        (e.isHolyShield() || self.getFigure()[0] < e.getFigure()[1] ? " 敌人还活着身材为 :" + (e.isHolyShield() ? e.info(false) :
+                                new Entourage(new int[]{e.getFigure()[0],e.getFigure()[1]}).info()) :  " 敌人被杀结果为" + new Entourage(new int[] {e.getFigure()[0],e.getFigure()[1] - self.getFigure()[0]}).info())
+                );
+            } else {
+                if (self.getFigure()[0] + self.getFigure()[1] - 1 < e.getFigure()[0]) {
+                    self.setFigure(new int[] {self.getFigure()[0] + self.getFigure()[1] - 1,1});
+                    System.out.println("受到敌人" + e.info() + "致命攻击，我已经无法再继续保护你了，我将倾尽全力给予敌人致命一击！变形为 " + self.info() + " 剩余身材： " +
+                            self.info() + (e.isHolyShield() || self.getFigure()[0] < e.getFigure()[1] ? " 敌人还活着身材为 :" + (e.isHolyShield() ? e.info(false) :
+                                    new Entourage(new int[]{e.getFigure()[0],e.getFigure()[1] - self.getFigure()[0]}).info()) :  " 敌人被杀结果为 " + new Entourage(new int[] {e.getFigure()[0],e.getFigure()[1] - self.getFigure()[0]}).info()));
+                    System.exit(0);
+                } else {
+                    self.setFigure(new int[] {self.getFigure()[0] + self.getFigure()[1] - e.getFigure()[0] - 1,e.getFigure()[0] + 1});
+                    System.out.println(" 被 " + e.info() + " 敌人攻击变形为 " + self.info() + " 剩余身材： " + self.info() +
+                            (e.isHolyShield() || self.getFigure()[0] < e.getFigure()[1] ? " 敌人还活着身材为 :" + (e.isHolyShield() ? e.info(false) :
+                                    new Entourage(new int[]{e.getFigure()[0],e.getFigure()[1]}).info()) :  " 敌人被杀结果为 " + new Entourage(new int[] {e.getFigure()[0],e.getFigure()[1] - self.getFigure()[0]}).info()));
+                }
+
             }
-            return null;
-        }
-        return null;
     }
 
-    public int[] gained(int [] gain, boolean hasHolyShield) {
-        this.hasHolyShield = hasHolyShield;
-        self = IntStream.range(0, 2)
-                .mapToObj(i -> self[i] + gain[i])
-                .mapToInt(Integer::intValue)
+    public void gained(int [] gain, boolean hasHolyShield) {
+        self.setHolyShield(self.isHolyShield() || hasHolyShield);
+        int [] figure;
+        figure = IntStream.range(0, 2)
+                .map(i -> self.getFigure()[i] + gain[i])
                 .toArray();
-        return self;
+        self.setFigure(figure);
+        System.out.println("受到增益！身材增加 " + new Entourage(gain,hasHolyShield).info() + " 当前身材 " + self.info());
     }
 
     @Test
-    public void testAttacked() {
-        System.out.println(Arrays.toString(gained(new int [] {1,100},true)));
-        System.out.println(Arrays.toString(attacked(Lists.newArrayList(new Entourage(new int[]{55,50},true)))));
+    public void testAttacked1() {
+        gained(new int [] {64,15},false);
+        attacked(new Entourage(new int[]{73,76},true));
+    }
+
+    @Test
+    public void testAttacked2() {
+        gained(new int [] {1,20},false);
+        attacked(new Entourage(new int[]{5,6},false));
+    }
+    @Test
+    public void testAttacked3() {
+        gained(new int [] {1,20},true);
+        attacked(new Entourage(new int[]{999,20},false));
+    }
+    @Test
+    public void testAttacked4() {
+        gained(new int [] {1,20},true);
+        attacked(new Entourage(new int[]{55,50},true));
     }
     @Test
     public void testGained() {
-        System.out.println(Arrays.toString(gained(new int [] {0,0},true)));
+        gained(new int [] {5,6},true);
     }
 }
