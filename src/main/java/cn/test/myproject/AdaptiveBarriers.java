@@ -21,21 +21,11 @@ class Entourage{
     }
 
     public String info(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(Arrays.toString(this.figure));
-        if (this.figure[1] < 0) sb.append(" (已阵亡) ");
-        else if (holyShield) sb.append(" (有圣盾) ");
-        else sb.append(" (无圣盾) ");
-        return String.valueOf(sb);
+        return Arrays.toString(this.figure) + (this.figure[1] < 0 ? " (已阵亡) " : (holyShield ? " (有圣盾) " : " (无圣盾) "));
     }
 
     public String info(boolean holyShield){
-        StringBuilder sb = new StringBuilder();
-        sb.append(Arrays.toString(this.figure));
-        if (this.figure[1] < 0) sb.append(" (已阵亡) ");
-        else if (holyShield) sb.append(" (有圣盾) ");
-        else sb.append(" (无圣盾) ");
-        return String.valueOf(sb);
+        return Arrays.toString(this.figure) + (this.figure[1] < 0 ? " (已阵亡) " : (holyShield ? " (有圣盾) " : " (无圣盾) "));
     }
 }
 
@@ -48,7 +38,7 @@ class gainedThread extends Thread{
         Random random = new Random();
         while (true){
             adaptiveBarriers.gained(new int[] {random.nextInt(101),random.nextInt(101)},random.nextBoolean());
-            Thread.sleep(20000);
+            Thread.sleep(3000);
         }
     }
 }
@@ -94,14 +84,15 @@ public class AdaptiveBarriers {
                 if (self.getFigure()[0] + self.getFigure()[1] - 1 < e.getFigure()[0]) {
                     self.setFigure(new int[] {self.getFigure()[0] + self.getFigure()[1] - 1,1});
                     System.out.println("受到敌人" + e.info() + "致命攻击，我已经无法再继续保护你了，我将倾尽全力给予敌人致命一击！变形为 " + self.info() + " 剩余身材： " +
-                            self.info() + (e.isHolyShield() || self.getFigure()[0] < e.getFigure()[1] ? " 敌人还活着身材为 :" + (e.isHolyShield() ? e.info(false) :
+                            new Entourage(new int[]{self.getFigure()[0],1 - e.getFigure()[0]}).info() + (e.isHolyShield() || self.getFigure()[0] < e.getFigure()[1] ? " 敌人还活着身材为 :" + (e.isHolyShield() ? e.info(false) :
                                     new Entourage(new int[]{e.getFigure()[0],e.getFigure()[1] - self.getFigure()[0]}).info()) :  " 敌人被杀结果为 " + new Entourage(new int[] {e.getFigure()[0],e.getFigure()[1] - self.getFigure()[0]}).info()));
                     System.exit(0);
                 } else {
                     self.setFigure(new int[] {self.getFigure()[0] + self.getFigure()[1] - e.getFigure()[0] - 1,e.getFigure()[0] + 1});
-                    System.out.println(" 被 " + e.info() + " 敌人攻击变形为 " + self.info() + " 剩余身材： " + self.info() +
+                    System.out.println(" 被 " + e.info() + " 敌人攻击变形为 " + self.info() + " 剩余身材： " + new Entourage(new int[]{self.getFigure()[0],self.getFigure()[1] - e.getFigure()[0]}).info() +
                             (e.isHolyShield() || self.getFigure()[0] < e.getFigure()[1] ? " 敌人还活着身材为 :" + (e.isHolyShield() ? e.info(false) :
                                     new Entourage(new int[]{e.getFigure()[0],e.getFigure()[1]}).info()) :  " 敌人被杀结果为 " + new Entourage(new int[] {e.getFigure()[0],e.getFigure()[1] - self.getFigure()[0]}).info()));
+                    self.setFigure(new int[]{self.getFigure()[0] + self.getFigure()[1] - e.getFigure()[0] - 1,1});
                 }
 
             }
