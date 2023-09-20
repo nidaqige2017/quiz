@@ -1,0 +1,2272 @@
+openapi: '3.0.2'
+info:
+  title: LoyaltyPlusGateway System API
+  version: '1.0'
+
+
+servers:
+  - url: https://api.server.test/loyalty-sapi/digital/customer-loyalty-sc/v1
+
+paths:
+  /users/{user_id}/register:
+    post:
+      tags:
+        - users
+      summary: Post user loylaty profile registration
+      description: Create a new user loyalty profile
+      operationId: 'post_user_registration'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ccid:
+                  type: string
+                  description: "CCID for AIA Marketing use"
+                hnw:
+                  type: boolean
+                  description: "A flag to indicate if the member is High Net Worth customer"
+                tiering:
+                  type: integer
+                  description: "Membership tiering (1. Gold, 2. Silver)"
+              example:
+                ccid: d77bb1d8-0c03-11ee-be56-0242ac120002
+                hnw: true
+                tiering: 1
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: '{{x-api-key}}'
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 20E4D008-6AFF-ED11-8F6D-002248ECDD47
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 90ea5fc1-b30d-4b6a-b237-16aa26292c51
+        - name: correlationId
+          in: header
+          schema:
+            type: string
+          example: 21ab0c8f-af43-44aa-bd7d-4224e24f2eff
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Tue, 13 Jun 2023 06:46:26 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+
+  /users/{user_id}/register-check:
+    get:
+      tags:
+        - users
+      summary: AppRegisterCheck
+      operationId: 'post_user_registration_check'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: '{{x-api-key}}'
+        - name: correlationId
+          in: header
+          schema:
+            type: string
+          example: efca67fb-62b1-4ca5-8f62-00d319600cb1
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 1EFFA1D5-8657-4409-A0B5-38D08DC772D7
+        - name: requestId
+          in: query
+          schema:
+            type: string
+          example: 7A2AD0F5-C7B7-4C61-9AFA-0F583F6DB2A7
+        - name: traceId
+          in: query
+          schema:
+            type: string
+          example: 55A5C356-484B-436E-AAC3-8753EABEC919
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Tue, 13 Jun 2023 06:48:47 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterCheckResponse'
+
+  /users/{user_id}/points:
+    get:
+      tags:
+        - users
+      summary: GetUserPoint
+      description: Get point balance of specific user
+      operationId: 'get_point_balance'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 07:41:23 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPointResponse'
+
+  /users/{user_id}/transactions:
+    get:
+      tags:
+        - users
+      summary: GetPointTransactions
+      description: Retrieve a list of point transactions which belong to specific user
+      operationId: 'get_point_transactions'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+        - name: pageOfRecord
+          in: header
+          schema:
+            type: integer
+            description: "The last record id to retrieve next page of record"
+            example: 8
+        - name: lastRecordInPageID
+          in: header
+          schema:
+            type: string
+            description: "The last record id to retrieve next page of record"
+            example: "d7add151-7a55-4ac3-a0f1-cd4ccd662340"
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 08:01:55 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPointHistoryResponse'
+
+  /users/{user_id}/send-points-to-friend:
+    post:
+      tags:
+        - users
+      summary: SendPointToFriend
+      description: Transfer a mount of points from sender to receiver
+      operationId: 'post_point_tansfer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                toAiaId:
+                  type: string
+                  description: "The recipient AIA ID"
+                transferPoint:
+                  type: integer
+                  description: "The point amount to transfer"
+              required:
+                - toAiaId
+                - transferPoint
+            example:
+              toAiaId: 49dac79c-0735-47d9-a685-c79d8ad02ab0
+              transferPoint: 800
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 0be410f3-e70a-4acf-b046-96e2d592b6f6
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Date:
+              schema:
+                type: string
+                example: Fri, 05 May 2023 09:06:52 GMT
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            Content-Encoding:
+              schema:
+                type: string
+                example: gzip
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Vary:
+              schema:
+                type: string
+                example: Accept-Encoding
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendPointToFriendResponse'
+
+  /users/{user_id}/missions:
+    get:
+      tags:
+        - users
+      summary: GetMissionList by status
+      description: Retrieve a list of missions which assigns to specific user / is completed by user
+      operationId: 'get_available_missions'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+        - name: progress
+          in: header
+          schema:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+          description: "1 - Complete, 2 - Pending, 3- Canceled, 4 – Complete + Pending, Null"
+          example: 1
+        - name: pageOfRecord
+          in: header
+          schema:
+            type: integer
+          description: "是否為最後一頁"
+          example: 8
+        - name: lastRecordInPageId
+          in: header
+          schema:
+            type: string
+          description: "The last record id to retrieve next page of record"
+          example: "d7add151-7a55-4ac3-a0f1-cd4ccd662340"
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Fri, 05 May 2023 03:10:20 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionListResponse'
+
+  /users/{user_id}/missions/{mission_id}/details:
+    get:
+      tags:
+        - users
+      summary: GetMissionDetails
+      description: Retrieve a specific mission details
+      operationId: 'get_mission_details'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mission_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+            example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: requestId
+          in: header
+          schema:
+            type: string
+            example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+        - name: missionId
+          in: header
+          schema:
+            type: object
+            description: "Mission ID"
+            example: "bd8febe8-fb54-4ccd-93c0-545fe895750a"
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Fri, 05 May 2023 04:00:14 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionDetailResponse'
+
+  /users/{user_id}/missions/{mission_id}/event/{event_id}:
+    put:
+      tags:
+        - users
+      summary: PushMissionEvent
+      description: Complete one event of a specific mission
+      operationId: 'post_mission_event'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventCode:
+                  type: string
+                groupId:
+                  type: string
+              required:
+                - eventCode
+                - groupId
+            example:
+              eventCode: PrefixABC
+              groupId: GPABC
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mission_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Fri, 05 May 2023 02:50:56 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushMissionEventResponse'
+
+  /users/{user_id}/missions/{mission_id}/event/{event_id}/check:
+    put:
+      tags:
+        - users
+      summary: PushMissionEventCheck
+      operationId: 'post_mission_event_check'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mission_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+        - name: traceId
+          in: header
+          schema:
+            type: integer
+          description: "ID for tracing the consent status"
+          example: "49dac79c-0735-47d9-a685-c79d8ad02ab0"
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Fri, 05 May 2023 02:53:34 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionEventCheckResponse'
+
+  /rewards/categories:
+    get:
+      tags:
+        - rewards
+      summary: GetRewardCategory
+      description: Retrieve a list of general reward category
+      operationId: 'get_reward_categories'
+      parameters:
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 07:19:11 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRedeemCouponCategoryResponse'
+
+  /rewards/{user_id}:
+    get:
+      tags:
+        - rewards
+      summary: GetRewardList
+      description: Retrieve a list of marketplace items which is available or coming-soon
+      operationId: 'get_reward_items'
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+        - name: pageOfRecord
+          in: header
+          schema:
+            type: integer
+            description: "是否為最後一頁"
+          example: 8
+        - name: lastRecordInPageId
+          in: header
+          schema:
+            type: string
+            description: "The last record id to retrieve next page of record"
+          example: "d7add151-7a55-4ac3-a0f1-cd4ccd662340"
+
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 06:52:51 GMT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CouponListResponse'
+                  isSuccess:
+                    type: boolean
+                    description: "成功或失敗"
+                  errorMsg:
+                    $ref: '#/components/schemas/Error'
+                  requestId:
+                    type: string
+                    description: "ID for tracing the API call"
+                example:
+                  data:
+                    couponList:
+                      - id: 6f590166-d5b7-42a0-ba6e-b7ed0e44c99a
+                        couponName:
+                          sc: 优惠券1
+                          tc: 優惠券1
+                          en: CouponName1
+                        imgUrl: https://imgUrl.png
+                        headerImageUrl: https://headerImageUrl.png
+                        startDate: '2022-04-19T18:56:07.262'
+                        endDate: '2022-05-18T18:56:07.262'
+                        requiredPoint: 500
+                        partnerName: Starbucks
+                        stateName:
+                          sc: 立即兑换
+                          tc: 立即兌換
+                          en: Redeem Now
+                        isInStock: true
+                        isReleased: true
+                        isFeatured: true
+                        isCanBeRedeemed: true
+                    isLastPage: false
+                    lastRecordInPageId: 6f590166-d5b7-42a0-ba6e-b7ed0e44c99a
+                  isSuccess: true
+                  errorMsg: null
+                  requestId: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+
+  /users/{user_id}/rewards/{rewards_id}/detail:
+    get:
+      tags:
+        - rewards
+      summary: GetRewardDetails
+      description: Retrieve a specific reward details
+      operationId: 'get_reward_details'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: rewards_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 07:19:11 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedeemCouponDetailResponse'
+
+  /rewards/{reward_id}/redeem:
+    post:
+      tags:
+        - rewards
+      summary: PostRedeemedCoupon
+      description: Burn point and redeem a specific reward
+      operationId: 'post_reward_redemption'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                couponId:
+                  type: string
+                  description: "Coupon ID from Redeem Coupon Detail API"
+                productList:
+                  type: array
+                  description: "List of Product under the Coupon to be redeemed"
+                  items:
+                    $ref: '#/components/schemas/Product'
+              example:
+                couponId: 0be410f3-257b-4f15-8304-96e2d592b6f6
+                productList:
+                  - productId: c9e65b22-95c9-4acf-a857-b0dd8d4872b7
+                    count: 4
+              required:
+                - couponId
+                - productList
+      parameters:
+        - name: reward_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 07:02:46 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedeemedCouponResponse'
+
+  /users/{user_id}/rewards:
+    get:
+      tags:
+        - users
+      summary: Get Redeemed Reward List
+      description: Retrieve a list of rewards which is redeemed and owned by specific user
+      operationId: 'get_redeemed_reward_items'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+        - name: pageOfRecord
+          in: header
+          schema:
+            type: integer
+            description: "是否為最後一頁"
+          example: 8
+        - name: lastRecordInPageID
+          in: header
+          schema:
+            type: string
+            description: "The last record id to retrieve next page of record"
+          example: "d7add151-7a55-4ac3-a0f1-cd4ccd662340"
+
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 08:36:00 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCouponListResponse'
+
+  /users/{user_id}/rewards/{reward_id}/details:
+    get:
+      tags:
+        - users
+      summary: Get Redeemed Reward Details
+      description: Retrieve a specific reward details
+      operationId: 'get_redeemed_reward_details'
+      parameters:
+        - name: reward_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+        - name: userCouponId
+          in: header
+          schema:
+            type: string
+            description: "AIA Connect to retrieve the coupon detail with coupon id"
+          example: "7d8c5a00-cfc9-455c-b9a2-33908d122260"
+
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 08:52:48 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCouponDetail'
+
+  /users/{user_id}/rewards/{reward_id}:
+    put:
+      tags:
+        - users
+      summary: PostRewardAsUsed / PostRewardAsUnused
+      description: Updated reward status as used which is redeemed and owned by a specific user
+      operationId: 'post_redeemed_reward_status_used'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userCouponId:
+                  type: string
+                  description: "The unique coupon ID"
+                isUsed:
+                  type: boolean
+                  description: "Mark as Used flag display in App"
+              required:
+                - userCouponId
+                - isUsed
+            example:
+              userCouponId: 7d8c5a00-cfc9-455c-b9a2-33908d122260
+              isUsed: true
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reward_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: 7B1E7F5B-13A3-463B-A30D-393CC0AF1B96
+        - name: aiaId
+          in: header
+          schema:
+            type: string
+          example: 52251E57-15EC-4786-8161-46BF549D1704
+        - name: requestId
+          in: header
+          schema:
+            type: string
+          example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+      responses:
+        '200':
+          description: OK
+          headers:
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Server:
+              schema:
+                type: string
+                example: Microsoft-IIS/10.0
+            X-Powered-By:
+              schema:
+                type: string
+                example: ASP.NET
+            Date:
+              schema:
+                type: string
+                example: Thu, 04 May 2023 09:10:34 GMT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarkAsUsedResponse'
+
+components:
+  schemas:
+    GetConsentStatusResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            consent:
+              type: boolean
+              example: true
+              description: "Consent flag display in App"
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    PostConsentStatusResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            traceId:
+              type: string
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    ConsentCheckResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    RegisterResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            traceId:
+              type: string
+            result:
+              type: integer
+              description: "1 – Information Verification Fail, correct and retry. 2 – Success in LoyaltyPlus, Please call check api to confirm the user creation in CRM. 3 – System Error, registration fail"
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: string
+          example: null
+          description: "錯誤訊息"
+        errorMsgDetail:
+          type: string
+          nullable: true
+        correlationId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    RegisterCheckResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            result:
+              type: integer
+              description: "1 – Success created in CRM, can perform further actions by using this newly added member. 2 – Fail, please refer the error message in ErrorMessage. 3 – Queuing, please call this api again in couple of seconds"
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        errorMsgDetail:
+          type: string
+          nullable: true
+        correlationId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    UserPointResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            avaliablePoint:
+              type: integer
+              description: "當前可用分"
+            expiringSoonPointList:
+              type: array
+              items:
+                type: object
+                properties:
+                  expiringSoonPoint:
+                    type: integer
+                    description: "即將到期可用分"
+                  expiringSoonDate:
+                    type: string
+                    format: datetime
+                    description: "即將到期可用分日期. Transaction Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+              description: "即將到期可用分"
+            expiredPoint:
+              type: integer
+              description: "到期未使用分"
+        isSuccess:
+          type: boolean
+        errorMsg:
+          type: string
+        requestId:
+          type: string
+      example:
+        data:
+          avaliablePoint: 2468
+          expiringSoonPointList:
+            - expiringSoonPoint: 1234
+              expiringSoonDate: '2025-04-01T00:00:00'
+            - expiringSoonPoint: 2345
+              expiringSoonDate: '2026-04-01T00:00:00'
+            - expiringSoonPoint: 3456
+              expiringSoonDate: '2027-04-01T00:00:00'
+          expiredPoint: 1234
+        isSuccess: true
+        errorMsg: null
+        requestId: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+
+    UserPointHistoryResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            recordList:
+              type: array
+              items:
+                type: object
+                properties:
+                  pointTransactionId:
+                    type: string
+                  name:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                      en:
+                        type: string
+                      sc:
+                        type: string
+                    description: "Name object"
+                  historyType:
+                    type: integer
+                    enum:
+                      - 1
+                      - 2
+                      - 3
+                      - 4
+                      - 5
+                    description: "1 - Purchase - Invoice Number. 2 - Redeem eCoupon (For AIA default use). 3 - Share Points. 4 - Point Adjustment. 5 - Void - Invoice Number"
+                  transactionDate:
+                    type: string
+                    format: datetime
+                    description: "The date of transaction. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+                  recordDate:
+                    type: string
+                    format: datetime
+                    description: "The date of record. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+                  point:
+                    type: integer
+                    description: "The point record of transaction"
+          example:
+            recordList:
+              - name:
+                  tc: 優惠券1
+                  en: Coupon 1
+                  sc: 优惠券1
+                historyType: 2
+                pointTransactionId: '0e356bb7-48ff-4398-8646-76453a8134ed'
+                transactionDate: '2025-04-01T00:00:00'
+                recordDate: '2025-04-01T00:00:00'
+                point: 300
+              - name:
+                  tc: ''
+                  en: Share Point
+                  sc: ''
+                historyType: 2
+                pointTransactionId: '0e356bb7-48ff-4398-8646-76453a8134ed'
+                transactionDate: '2025-04-01T00:00:00'
+                recordDate: '2025-04-01T00:00:00'
+                point: -300
+        isSuccess:
+          type: boolean
+        errorMsg:
+          type: string
+        requestId:
+          type: string
+      example:
+        data:
+          recordList:
+            - name:
+                tc: 優惠券1
+                en: Coupon 1
+                sc: 优惠券1
+              historyType: 2
+              transactionDate: '2025-04-01T00:00:00'
+              recordDate: '2025-04-01T00:00:00'
+              point: 300
+            - name:
+                tc: ''
+                en: Share Point
+                sc: ''
+              historyType: 2
+              transactionDate: '2025-04-01T00:00:00'
+              recordDate: '2025-04-01T00:00:00'
+              point: -300
+          isSuccess: true
+          errorMsg: null
+          requestId: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+
+    SendPointToFriendResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    MissionListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            missionList:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: "Mission ID"
+                  iconUrl:
+                    type: string
+                    description: "Mission Icon"
+                  headerImageUrl:
+                    type: string
+                    description: "Mission header image"
+                  missionName:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                      en:
+                        type: string
+                      sc:
+                        type: string
+                    description: "Mission Name"
+                  groupProgress:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        groupId:
+                          type: string
+                          description: "Group ID. Group ID is generated from AIA"
+                        progress:
+                          type: integer
+                          enum:
+                            - 1
+                            - 2
+                            - 3
+                          description: "Mission Status.1 - Complete, 2 - Pending, 3- Canceled"
+                        eventCompleteCount:
+                          type: integer
+                          description: "Count of completed event in Mission"
+                        eventTotalCount:
+                          type: integer
+                          description: "Count of Total event in Mission"
+                  subtitle:
+                    type: string
+                    description: "Mission subtitle"
+                  content:
+                    type: string
+                    description: "Mission content"
+                  ctaUrl:
+                    type: string
+                    description: "CTA deeplink"
+                  ctaName:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                      en:
+                        type: string
+                      sc:
+                        type: string
+                    description: "CTA Name"
+                  rewardPoint:
+                    type: number
+                    description: "The mission point can be awarded"
+                  isFeatured:
+                    type: boolean
+                    description: "Highlighted mission indicator"
+                  isCompleted:
+                    type: boolean
+                    description: "Completed Mission indicator"
+                  isOneOff:
+                    type: boolean
+                    description: "Setting flag frequency come from LoyaltyPlus. True: One off. False: Evergreen"
+            isLastPage:
+              type: boolean
+              description: "是否為最後一頁"
+            lastRecordInPageId:
+              type: string
+              description: "The last record id to retrieve next page of record"
+        isSuccess:
+          type: boolean
+          description: "成功或失敗"
+        errorMsg:
+          type: string
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          description: "ID for tracing the API call"
+
+    MissionDetailResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            missionDetail:
+              $ref: '#/components/schemas/MissionDetail'
+            isSuccess:
+              type: boolean
+            errorMsg:
+              type: object
+              example: null
+            requestId:
+              type: string
+              example: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+
+    MissionDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "bd8febe8-fb54-4ccd-93c0-545fe895750a"
+        iconUrl:
+          type: string
+          description: "Mission Icon"
+          example: "aaa"
+        headerImageUrl:
+          type: string
+          description: "Mission header image"
+          example: "aaa"
+        missionName:
+          type: object
+          description: "Mission Name"
+          properties:
+            tc:
+              type: string
+              example: "aaa"
+            en:
+              type: string
+              example: "Read I-Say articles"
+            sc:
+              type: string
+              example: "aaa"
+        subtitle:
+          type: string
+          description: "Mission subtitle"
+          example: "Learn more about insurance"
+        content:
+          type: string
+          description: :"Mission content"
+          example: "aaa"
+        ctaUrl:
+          type: string
+          description: "CTA deeplink"
+          example: "aaa"
+        ctaName:
+          type: object
+          description: "CTA Name"
+          properties:
+            tc:
+              type: string
+              example: "aaa"
+            en:
+              type: string
+              example: "aaa"
+            sc:
+              type: string
+              example: "aaa"
+        rewardPoint:
+          type: number
+          description: "The mission point can be awarded"
+          example: 500
+        isFeatured:
+          type: boolean
+          description: "Highlighted mission indicator"
+          example: true
+        isCompleted:
+          type: boolean
+          description: "Completed Mission indicator"
+          example: true
+        isOneOff:
+          type: boolean
+          description: "Setting flag frequency come from LoyaltyPlus. True: One off. False: Evergreen"
+          example: False
+        startTime:
+          type: string
+          format: date-time
+          description: "Mission start time. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+          example: '2023-01-01T00:00:00'
+        endTime:
+          type: string
+          format: date-time
+          description: "Mission end time. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+          example: '2023-05-01T23:59:59.999'
+        groupId:
+          type: string
+          description: "Group ID. Group ID is generated from AIA"
+          example: "aaa"
+        progress:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+          description: "Mission Status.1 - Complete, 2 - Pending, 3- Canceled"
+        eventCompleteCount:
+          type: integer
+          description: "Count of completed event in Mission"
+        eventTotalCount:
+          type: integer
+          description: "Count of Total event in Mission"
+        missionEventList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MissionEvent'
+          example:
+            - missionEventId: a0d46960-fb2f-4036-914d-e114e7247a9c
+              missionEventCode: PrefixABC
+              missionEventName: NameABC
+            - missionEventId: c7af6324-d44d-461f-b496-58a435a29f93
+              missionEventCode: PrefixDEF
+              missionEventName: NameDEF
+
+    MissionEvent:
+      type: object
+      properties:
+        missionEventId:
+          type: string
+          description: "Event ID"
+        missionEventCode:
+          type: string
+          description: "Event Code"
+        missionEventName:
+          type: string
+          description: "Event Name"
+
+    PushMissionEventResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            traceId:
+              type: string
+              description: "ID for tracing the push mission event status"
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    MissionEventCheckResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    GetRedeemCouponCategoryResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            userCouponList:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: "Category ID"
+                  name:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                      en:
+                        type: string
+                      sc:
+                        type: string
+                    description: "Category Name"
+              example:
+                - id: 7d8c5a00-cfc9-455c-b9a2-33908d122260
+                  name:
+                    tc: 優惠券名字1
+                    en: UserCouponName1
+                    sc: 优惠券名字1
+                - id: a73c76c2-4102-4964-9ed3-73601b1f394f
+                  name:
+                    tc: 優惠券名字2
+                    en: UserCouponName2
+                    sc: 优惠券名字2
+        isSuccess:
+          type: boolean
+        errorMsg:
+          type: object
+        requestId:
+          type: string
+
+    Coupon:
+      type: object
+      properties:
+        id:
+          type: string
+        couponName:
+          type: object
+          description: "Coupon Name"
+          properties:
+            sc:
+              type: string
+            tc:
+              type: string
+            en:
+              type: string
+        imgUrl:
+          type: string
+          description: :"Coupon Icon (Partner)"
+        headerImageUrl:
+          type: string
+          description: "Coupon header image"
+        startDate:
+          type: string
+          format: datetime
+          description: "Coupon start time. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+        endDate:
+          type: string
+          format: datetime
+          description: "Coupon end time. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+        requiredPoint:
+          type: number
+          description: "The require point to redeem coupon"
+        partnerName:
+          type: string
+          description: "Coupon partner name"
+        stateName:
+          type: object
+          description: "Redeem Now，Out of Stock，Coming Soon"
+          properties:
+            sc:
+              type: string
+            tc:
+              type: string
+            en:
+              type: string
+        isInStock:
+          type: boolean
+          description: "Out of stock flag"
+        isReleased:
+          type: boolean
+          description: "Is released flag"
+        isFeatured:
+          type: boolean
+          description: "Highlighted coupon indicator"
+        isCanBeRedeemed:
+          type: boolean
+          description: "Coupon can be redeemed"
+    CouponListResponse:
+      type: object
+      properties:
+        couponList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coupon'
+        isLastPage:
+          type: boolean
+          description: "是否為最後一頁"
+        lastRecordInPageId:
+          type: string
+          description: "The last record id to retrieve next page of record"
+      example:
+        couponList:
+          - id: 6f590166-d5b7-42a0-ba6e-b7ed0e44c99a
+            couponName:
+              sc: 优惠券1
+              tc: 優惠券1
+              en: CouponName1
+            imgUrl: https://imgUrl.png
+            headerImageUrl: https://headerImageUrl.png
+            startDate: '2022-04-19T18:56:07.262'
+            endDate: '2022-05-18T18:56:07.262'
+            requiredPoint: 500
+            partnerName: Starbucks
+            stateName:
+              sc: 立即兑换
+              tc: 立即兌換
+              en: Redeem Now
+            isInStock: true
+            isReleased: true
+            isFeatured: true
+            isCanBeRedeemed: true
+        isLastPage: false
+        lastRecordInPageId: 6f590166-d5b7-42a0-ba6e-b7ed0e44c99a
+    Error:
+      type: object
+      description: "錯誤訊息"
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    RedeemCouponDetailResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            name:
+              type: object
+              description: "Coupon Name"
+              properties:
+                tc:
+                  type: string
+                en:
+                  type: string
+                sc:
+                  type: string
+            imgUrl:
+              type: string
+              description: "Coupon Icon (Partner)"
+            headerImageUrl:
+              type: string
+              description: "Coupon header image"
+            isFeatured:
+              type: boolean
+              description: "Highlighted coupon indicator"
+            categoryId:
+              type: string
+              description: "Coupon Category"
+            startDate:
+              type: string
+              format: datetime
+              description: "Coupon start date of the redemption Period. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+            endDate:
+              type: string
+              format: datetime
+              description: "Coupon end date of the redemption Period. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+            remark:
+              type: object
+              description: "Remark"
+              properties:
+                tc:
+                  type: string
+                en:
+                  type: string
+                sc:
+                  type: string
+            description:
+              type: object
+              description: "Description"
+              properties:
+                tc:
+                  type: string
+                en:
+                  type: string
+                sc:
+                  type: string
+            tc:
+              type: object
+              description: "Term and condition"
+              properties:
+                tc:
+                  type: string
+                en:
+                  type: string
+                sc:
+                  type: string
+            requiredPoint:
+              type: number
+              description: "The required point to redeem coupon"
+            isQuotaByStore:
+              type: boolean
+              description: "Quota by store (default is false)"
+            noStoreQuota:
+              type: integer
+              description: "Quota in store (coupon)"
+            noStoreQuotaProductId:
+              type: string
+              description: "Product ID related to coupon"
+            isWithoutSpec:
+              type: boolean
+              description: "Product specification (default is false)"
+            userQuota:
+              type: integer
+              description: "個人可兌換的個數. null: no limit"
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+      example:
+        data:
+          name:
+            tc: 所需積分1500分
+            en: Requires 1500 pts
+            sc: 所需积分1500分
+          imgUrl: https://imgUrl.png
+          headerImageUrl: https://headerImageUrl.png
+          isFeatured: true
+          categoryId: bd8febe8-fb54-4ccd-93c0-545fe895750a
+          startDate: '2022-04-19T18:22:07.243'
+          endDate: '2022-04-23T18:22:07.243'
+          remark:
+            tc: $15 Coupon Remark C
+            en: $15 Coupon Remark E
+            sc: $15 Coupon Remark S
+          description:
+            tc: TC
+            en: <html><body><ul><li>Enjoy the music concert.</li><li>Redeem it asap!</li></ul></body></html>
+            sc: SC
+          tc:
+            tc: TC
+            en: <html><body><ol><li>By using this service, you agree to be bound by these terms and conditions.</li><li>We reserve the right to modify these terms and conditions at any time, without prior notice.</li><li>Your use of the service is at your own risk. We are not responsible for any damage or loss that may result from your use of the service.</li><li>We reserve the right to terminate your access to the service at any time, for any reason, without prior notice.</li><li>All content provided on this website is for informational purposes only. We do not guarantee the accuracy, completeness, or usefulness of any content.</li><li>Any unauthorized use of the service may result in legal action.</li><li>This agreement shall be governed by and construed in accordance with the laws of the state of [insert state here].</li></ol></body></html>
+            sc: SC
+          requiredPoint: 1500
+          isQuotaByStore: false
+          noStoreQuota: 2147483647
+          noStoreQuotaProductId: 0a989120-97ff-4e14-b21c-accddf0bc330
+          isWithoutSpec: false
+          userQuota: 2
+        isSuccess: true
+        errorMsg: null
+        requestId: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+
+    Product:
+      type: object
+      properties:
+        productId:
+          type: string
+          description: "Product ID from Redeem Coupon API in case of different Product in one Coupon ID"
+        count:
+          type: integer
+          description: "Number of Product that going to redeem"
+      required:
+        - productId
+        - count
+    RedeemedCouponResponse:
+      type: object
+      properties:
+        data:
+          type: object
+        isSuccess:
+          type: boolean
+        errorMsg:
+          type: object
+        requestId:
+          type: string
+      example:
+        data: null
+        isSuccess: true
+        errorMsg: null
+        requestId: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+
+    UserCouponListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            userCouponList:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                      en:
+                        type: string
+                      sc:
+                        type: string
+                    description: "Coupon name"
+                  endDate:
+                    type: string
+                    format: datetime
+                    description: "Coupon end time. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+                  imageUrl:
+                    type: string
+                    description: "Coupon Icon (Partner)"
+                  headerImageUrl:
+                    type: string
+                    description: "Coupon header image"
+                  isCanBeUsed:
+                    type: boolean
+                    description: "是否能被使用"
+                  couponStatus:
+                    type: integer
+                    enum:
+                      - 1
+                      - 2
+                      - 3
+                      - 4
+                      - 5
+                      - 6
+                    description: "1 – Cancelled. 2 – Valid. 3 – Used. 4 – Expired"
+              example:
+                - id: 7d8c5a00-cfc9-455c-b9a2-33908d122260
+                  name:
+                    tc: 優惠券名字1
+                    en: UserCouponName1
+                    sc: 优惠券名字1
+                  endDate: '2022-04-25T22:07:22.114'
+                  imageUrl: https://ImageUrl.png
+                  headerImageUrl: https://headerImageUrl.png
+                  isCanBeUsed: true
+                  couponStatus: 2
+                - id: a73c76c2-4102-4964-9ed3-73601b1f394f
+                  name:
+                    tc: 優惠券名字2
+                    en: UserCouponName2
+                    sc: 优惠券名字2
+                  endDate: '2022-04-25T22:07:22.114'
+                  imageUrl: https://ImageUrl.png
+                  headerImageUrl: https://headerImageUrl.png
+                  isCanBeUsed: false
+                  couponStatus: 2
+            isLastPage:
+              type: boolean
+            lastRecordInPageId:
+              type: string
+          example:
+            userCouponList:
+              - id: 7d8c5a00-cfc9-455c-b9a2-33908d122260
+                name:
+                  tc: 優惠券名字1
+                  en: UserCouponName1
+                  sc: 优惠券名字1
+                endDate: '2022-04-25T22:07:22.114'
+                imageUrl: https://ImageUrl.png
+                headerImageUrl: https://headerImageUrl.png
+                isCanBeUsed: true
+                couponStatus: 2
+              - id: a73c76c2-4102-4964-9ed3-73601b1f394f
+                name:
+                  tc: 優惠券名字2
+                  en: UserCouponName2
+                  sc: 优惠券名字2
+                endDate: '2022-04-25T22:07:22.114'
+                imageUrl: https://ImageUrl.png
+                headerImageUrl: https://headerImageUrl.png
+                isCanBeUsed: false
+                couponStatus: 2
+            isLastPage: false
+            lastRecordInPageId: a73c76c2-4102-4964-9ed3-73601b1f394f
+        isSuccess:
+          type: boolean
+          description: "成功或失敗"
+        errorMsg:
+          type: string
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          description: "ID for tracing the API call"
+      example:
+        data:
+          userCouponList:
+            - id: 7d8c5a00-cfc9-455c-b9a2-33908d122260
+              name:
+                tc: 優惠券名字1
+                en: UserCouponName1
+                sc: 优惠券名字1
+              endDate: '2022-04-25T22:07:22.114'
+              imageUrl: https://ImageUrl.png
+              headerImageUrl: https://headerImageUrl.png
+              isCanBeUsed: true
+              couponStatus: 2
+            - id: a73c76c2-4102-4964-9ed3-73601b1f394f
+              name:
+                tc: 優惠券名字2
+                en: UserCouponName2
+                sc: 优惠券名字2
+              endDate: '2022-04-25T22:07:22.114'
+              imageUrl: https://ImageUrl.png
+              headerImageUrl: https://headerImageUrl.png
+              isCanBeUsed: false
+              couponStatus: 2
+          isLastPage: false
+          lastRecordInPageId: a73c76c2-4102-4964-9ed3-73601b1f394f
+        isSuccess: true
+        errorMsg: null
+        correlationId: 741f6f43-e70a-4200-b046-75d6b3b74b8f
+
+    UserCouponDetail:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            userCouponDetail:
+              type: array
+              items:
+                type: object
+                properties:
+                  userCouponId:
+                    type: string
+                    example: "3211555-cd2c-5754-bhh8-ee72285fe33r"
+                  couponName:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                        example: "$50現金券"
+                      en:
+                        type: string
+                        example: "$50 Cash Coupon"
+                      sc:
+                        type: string
+                        example: "$50现金券"
+                    description: "Coupon Name"
+                  couponSubtitle:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                        example: "酒店現金券"
+                      en:
+                        type: string
+                        example: "Hotel Cash Coupon"
+                      sc:
+                        type: string
+                        example: "酒店现金券"
+                    description: "Cooupon Subtitle"
+                  couponDESC:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                        example: "酒店消費$100贈$50代金券"
+                      en:
+                        type: string
+                        example: "Hotel $50 Cash Coupon when spending $100"
+                      sc:
+                        type: string
+                        example: "酒店消费$100赠$50代金券"
+                    description: "Coupon Description"
+                  couponRemark:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                        example: "只適用於工作日"
+                      en:
+                        type: string
+                        example: "Only applicable in weekday"
+                      sc:
+                        type: string
+                        example: "只适用于工作日"
+                    description: "Coupon Remarks"
+                  couponTC:
+                    type: object
+                    properties:
+                      tc:
+                        type: string
+                        example: "1. 不適用於任何公眾假期、星期日、星期六， 2. 每 $100 的標價項目消費"
+                      en:
+                        type: string
+                        example: "1. No applicable on any Public Holiday, Sunday, Saturday, 2. Spending per $100 on list price item"
+                      sc:
+                        type: string
+                        example: "1. 不适用于任何公众假期、星期日、星期六， 2. 每 $100 的标价项目消费"
+                    description: "Coupon Term & Conditions"
+                  couponCode:
+                    type: string
+                    example: "HC507891211"
+                    description: "Coupon Code"
+                  couponQRCode:
+                    type: string
+                    example: "24298837-be2c-4665-bce8-ee72285fd26dHC507891211"
+                    description: "Coupon QR code string. The code is provided by AIA"
+                  effectiveDate:
+                    type: string
+                    format: datetime
+                    example: "2023-01-01T00:00:00.000"
+                    description: "Coupon effective date. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+                  expiryDate:
+                    type: string
+                    format: datetime
+                    example: "2023-05-01T23:59:59.999"
+                    description: "Coupon expiry date. Date & Time in “YYYY-MM-DDTHH:MM:SS.SSS” for example 2021-09-06T10:20:00.000"
+                  isCanBeUsed:
+                    type: boolean
+                    example: true
+                    description: "是否能被使用"
+                  couponStatus:
+                    type: integer
+                    enum:
+                      - 1
+                      - 2
+                      - 3
+                      - 4
+                      - 5
+                      - 6
+                    description: "1 – Cancelled. 2 – Valid. 3 – Used. 4 – Expired"
+                  imageUrl:
+                    type: string
+                    example: "https://ImageUrl.png"
+                    description: "Coupon Icon (Partner)"
+                  headerImageUrl:
+                    type: string
+                    example: "https://headerImageUrl.png"
+                    description: "Coupon header image"
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: string
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+    MarkAsUsedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        isSuccess:
+          type: boolean
+          example: true
+          description: "成功或失敗"
+        errorMsg:
+          type: object
+          example: null
+          description: "錯誤訊息"
+        requestId:
+          type: string
+          example: "741f6f43-e70a-4200-b046-75d6b3b74b8f"
+          description: "ID for tracing the API call"
+
+
+
+
+
+
+
+
